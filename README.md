@@ -1,5 +1,7 @@
 # PR Compliance + Purchase Order
 
+[![CI](https://github.com/uvspraneeth/sap-btp-pr-compliance/actions/workflows/ci.yml/badge.svg)](https://github.com/uvspraneeth/sap-btp-pr-compliance/actions/workflows/ci.yml) ![SAP CAP](https://img.shields.io/badge/SAP%20CAP-10-0a6ed1) ![Fiori elements](https://img.shields.io/badge/Fiori%20elements-V4-0a6ed1) ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933) ![Runtime](https://img.shields.io/badge/CF%20runtime-384%20MB-success)
+
 Enterprise purchase-requisition compliance and purchase-order application on **SAP BTP Cloud Foundry**, built with **SAP CAP (Node.js, CAP 10)**, **SAP HANA Cloud** and **SAP Fiori elements V4** (Horizon theme, SAP icons).
 
 - Requesters raise PRs.
