@@ -1,0 +1,27 @@
+# Optional: horizontal scaling of the CAP service (requires the "autoscaler" entitlement).
+#   cf deploy mta_archives/pr-compliance_1.0.0.mtar -e deploy/secrets.mtaext,deploy/autoscaler.mtaext
+# Worst case: 3 x 256M srv + 128M approuter = 896M (< 1 GB).
+_schema-version: "3.3"
+ID: pr-compliance-autoscaler
+extends: pr-compliance-secrets
+
+modules:
+  - name: pr-compliance-srv
+    requires:
+      - name: pr-compliance-autoscaler
+        parameters:
+          config:
+            instance_min_count: 1
+            instance_max_count: 3
+            scaling_rules:
+              - { metric_type: cpu, operator: ">", threshold: 70, adjustment: "+1", breach_duration_secs: 120, cool_down_secs: 300 }
+              - { metric_type: cpu, operator: "<", threshold: 25, adjustment: "-1", breach_duration_secs: 600, cool_down_secs: 300 }
+              - { metric_type: memoryutil, operator: ">", threshold: 80, adjustment: "+1", breach_duration_secs: 120, cool_down_secs: 300 }
+              - { metric_type: memoryutil, operator: "<", threshold: 45, adjustment: "-1", breach_duration_secs: 600, cool_down_secs: 300 }
+
+resources:
+  - name: pr-compliance-autoscaler
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: autoscaler
+      service-plan: standard

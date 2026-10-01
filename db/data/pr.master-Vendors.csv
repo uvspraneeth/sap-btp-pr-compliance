@@ -1,0 +1,7 @@
+ID;name;category_code;status;certExpiry;rating;country;email;s4Supplier
+V1001;Contoso IT Supplies;IT;Active;2027-12-31;4.5;US;sales@contoso.example;0017300001
+V1002;Fabrikam Hardware;IT;Active;2027-06-30;4.1;US;orders@fabrikam.example;0017300002
+V1003;Northwind Office;OFFICE;Active;2027-03-31;4.3;US;office@northwind.example;0000100108
+V1004;Blocked Traders;IT;Blocked;2027-12-31;2.0;US;info@blocked.example;0000100132
+V1005;Legacy Services;SERVICES;Active;2025-06-30;3.8;US;hello@legacy.example;0000100032
+V1006;Adatum Consulting;SERVICES;Active;2028-01-31;4.6;US;contact@adatum.example;0000100033

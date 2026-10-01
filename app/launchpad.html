@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  PR Compliance launchpad (SAP Fiori launchpad sandbox, SAPUI5 from CDN).
+  - Local:  http://localhost:4004/launchpad.html  (cds watch serves app/*/webapp)
+  - Cloud:  served by the approuter (app/router/resources/launchpad.html, keep both copies identical);
+            apps are loaded from the HTML5 Application Repository (/prcompliance.<appid>/).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PR Compliance</title>
+  <script>
+    (function () {
+      var local = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+      // dev: cds watch serves app/<dir>/webapp | cloud: html5 repo path <sap.cloud.service>.<app id without dots>
+      function url(dir) { return local ? "./" + dir + "/webapp" : "/prcompliance.pr" + dir; }
+      var apps = [
+        { intent: "PurchaseRequisition-manage", id: "pr.requisitions", dir: "requisitions", title: "My Purchase Requisitions", subtitle: "Create, submit and track", icon: "sap-icon://request" },
+        { intent: "Approval-manage", id: "pr.approvals", dir: "approvals", title: "My Approvals", subtitle: "Decide pending approvals", icon: "sap-icon://approvals" },
+        { intent: "PurchaseOrder-manage", id: "pr.purchaseorders", dir: "purchaseorders", title: "Purchase Orders", subtitle: "Reconcile and post to S/4HANA", icon: "sap-icon://sales-order" },
+        { intent: "MasterData-manage", id: "pr.masterdata", dir: "masterdata", title: "Approval Rules & Master Data", subtitle: "Rules, vendors, budgets", icon: "sap-icon://settings" }
+      ];
+      var applications = {}, tiles = [];
+      apps.forEach(function (a, i) {
+        applications[a.intent] = {
+          title: a.title,
+          additionalInformation: "SAPUI5.Component=" + a.id,
+          applicationType: "URL",
+          url: url(a.dir),
+          navigationMode: "embedded"
+        };
+        tiles.push({
+          id: "pr_tile_" + i,
+          tileType: "sap.ushell.ui.tile.StaticTile",
+          properties: { title: a.title, subtitle: a.subtitle, icon: a.icon, targetURL: "#" + a.intent }
+        });
+      });
+      window["sap-ushell-config"] = {
+        defaultRenderer: "fiori2",
+        renderers: { fiori2: { componentData: { config: { enableSearch: false } } } },
+        services: {
+          LaunchPage: {
+            adapter: {
+              config: {
+                groups: [{ id: "pr_compliance", title: "PR Compliance", isPreset: true, isVisible: true, isGroupLocked: true, tiles: tiles }]
+              }
+            }
+          },
+          NavTargetResolution: { adapter: { config: { applications: applications } } }
+        }
+      };
+    })();
+  </script>
+  <script id="sap-ushell-bootstrap" src="https://ui5.sap.com/1.148.11/test-resources/sap/ushell/bootstrap/sandbox.js"></script>
+  <script id="sap-ui-bootstrap"
+    src="https://ui5.sap.com/1.148.11/resources/sap-ui-core.js"
+    data-sap-ui-libs="sap.m, sap.ushell, sap.fe.templates"
+    data-sap-ui-theme="sap_horizon"
+    data-sap-ui-compat-version="edge"
+    data-sap-ui-async="true"
+    data-sap-ui-preload="async"
+    data-sap-ui-frame-options="allow"
+    data-sap-ui-flexibility-services='[{"connector": "LocalStorageConnector"}]'></script>
+  <script>
+    sap.ui.require(["sap/ui/core/Core"], function (Core) {
+      Core.ready().then(function () {
+        sap.ushell.Container.createRenderer("fiori2", true).then(function (oRenderer) {
+          oRenderer.placeAt("content");
+        });
+      });
+    });
+  </script>
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>

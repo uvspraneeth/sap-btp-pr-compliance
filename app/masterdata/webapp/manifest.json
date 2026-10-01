@@ -1,0 +1,328 @@
+{
+  "_version": "1.86.0",
+  "sap.app": {
+    "id": "pr.masterdata",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.33.0",
+      "toolsId": "01a5e99f-72ea-460a-a632-cf3127386674"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/admin/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "MasterData-manage": {
+          "semanticObject": "MasterData",
+          "action": "manage",
+          "title": "{{appTitle}}",
+          "subTitle": "{{appSubTitle}}",
+          "icon": "sap-icon://settings",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://settings",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.148.11",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "pr.masterdata.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ApprovalRulesList",
+          "target": "ApprovalRulesList"
+        },
+        {
+          "pattern": "ApprovalRules({key}):?query:",
+          "name": "ApprovalRulesObjectPage",
+          "target": "ApprovalRulesObjectPage"
+        },
+        {
+          "pattern": "ApprovalRules({key})/levels({key2}):?query:",
+          "name": "ApprovalLevelDefsObjectPage",
+          "target": "ApprovalLevelDefsObjectPage"
+        },
+        {
+          "pattern": "Vendors({key}):?query:",
+          "name": "VendorsObjectPage",
+          "target": "VendorsObjectPage"
+        },
+        {
+          "pattern": "Materials({key}):?query:",
+          "name": "MaterialsObjectPage",
+          "target": "MaterialsObjectPage"
+        },
+        {
+          "pattern": "Budgets({key}):?query:",
+          "name": "BudgetsObjectPage",
+          "target": "BudgetsObjectPage"
+        },
+        {
+          "pattern": "Employees({key}):?query:",
+          "name": "EmployeesObjectPage",
+          "target": "EmployeesObjectPage"
+        },
+        {
+          "pattern": "Settings({key}):?query:",
+          "name": "SettingsObjectPage",
+          "target": "SettingsObjectPage"
+        }
+      ],
+      "targets": {
+        "ApprovalRulesList": {
+          "type": "Component",
+          "id": "ApprovalRulesList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/ApprovalRules",
+              "variantManagement": "Page",
+              "navigation": {
+                "ApprovalRules": {
+                  "detail": {
+                    "route": "ApprovalRulesObjectPage"
+                  }
+                },
+                "Vendors": {
+                  "detail": {
+                    "route": "VendorsObjectPage"
+                  }
+                },
+                "Materials": {
+                  "detail": {
+                    "route": "MaterialsObjectPage"
+                  }
+                },
+                "Budgets": {
+                  "detail": {
+                    "route": "BudgetsObjectPage"
+                  }
+                },
+                "Employees": {
+                  "detail": {
+                    "route": "EmployeesObjectPage"
+                  }
+                },
+                "Settings": {
+                  "detail": {
+                    "route": "SettingsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              },
+              "initialLoad": "Enabled",
+              "views": {
+                "paths": [
+                  {
+                    "key": "rules",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Rules"
+                  },
+                  {
+                    "key": "vendors",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Vendors",
+                    "entitySet": "Vendors"
+                  },
+                  {
+                    "key": "materials",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Materials",
+                    "entitySet": "Materials"
+                  },
+                  {
+                    "key": "budgets",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Budgets",
+                    "entitySet": "Budgets"
+                  },
+                  {
+                    "key": "employees",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Employees",
+                    "entitySet": "Employees"
+                  },
+                  {
+                    "key": "settings",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionPresentationVariant#Settings",
+                    "entitySet": "Settings"
+                  }
+                ],
+                "showCounts": false
+              }
+            }
+          }
+        },
+        "ApprovalRulesObjectPage": {
+          "type": "Component",
+          "id": "ApprovalRulesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/ApprovalRules",
+              "navigation": {
+                "levels": {
+                  "detail": {
+                    "route": "ApprovalLevelDefsObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ApprovalLevelDefsObjectPage": {
+          "type": "Component",
+          "id": "ApprovalLevelDefsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/ApprovalRules/levels"
+            }
+          }
+        },
+        "VendorsObjectPage": {
+          "type": "Component",
+          "id": "VendorsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Vendors"
+            }
+          }
+        },
+        "MaterialsObjectPage": {
+          "type": "Component",
+          "id": "MaterialsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Materials"
+            }
+          }
+        },
+        "BudgetsObjectPage": {
+          "type": "Component",
+          "id": "BudgetsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Budgets"
+            }
+          }
+        },
+        "EmployeesObjectPage": {
+          "type": "Component",
+          "id": "EmployeesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Employees"
+            }
+          }
+        },
+        "SettingsObjectPage": {
+          "type": "Component",
+          "id": "SettingsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Settings"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "prcompliance"
+  }
+}

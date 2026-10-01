@@ -1,0 +1,11 @@
+name;value;description
+PRICE_WARN_PCT;10;Unit price above catalog standard price by this % raises a warning
+PRICE_FAIL_PCT;25;Unit price above catalog standard price by this % blocks the PR
+JUSTIFICATION_MIN_AMOUNT;5000;Business justification (>= 30 chars) mandatory from this PR total
+QUOTES_MIN_AMOUNT;25000;At least 3 quotes required from this PR total
+SPLIT_WINDOW_DAYS;7;Look-back window for split-purchase detection
+SPLIT_THRESHOLD;10000;Combined total (same requester + vendor) that flags a split purchase
+DUP_WINDOW_DAYS;30;Look-back window for duplicate detection (same requester + material)
+PO_PRICE_TOL_PCT;5;PO unit price tolerance vs approved PR price
+PO_TOTAL_TOL_PCT;2;PO total tolerance vs approved PR total
+REMINDER_HOURS;24;Re-send reminder when a task is pending longer than this

@@ -1,0 +1,241 @@
+_schema-version: "3.3"
+ID: pr-compliance
+version: 1.0.0
+description: "PR Compliance + Purchase Order (CAP + Fiori elements) - runtime budget ~384 MB"
+parameters:
+  enable-parallel-deployments: true
+  deploy_mode: html5-repo
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+
+modules:
+  # ---------------------------------------------------------------------------
+  # CAP service (Node.js) - 256 MB, stateless, scales 1..3 (deploy/autoscaler.mtaext)
+  # ---------------------------------------------------------------------------
+  - name: pr-compliance-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+      instances: 1
+      health-check-type: http
+      health-check-http-endpoint: /health
+      health-check-timeout: 120
+    build-parameters:
+      builder: npm-ci
+    properties:
+      NODE_ENV: production
+      # Measured (25 concurrent users, 1400 req): peak RSS 129 MB vs 254 MB with V8 defaults
+      NODE_OPTIONS: "--max-old-space-size=150 --max-semi-space-size=8"
+      MALLOC_ARENA_MAX: "2" # fewer glibc arenas -> less native fragmentation in small containers
+      # S/4 host sends an incomplete Let's Encrypt Gen-Y chain -> trust the bundled, verified intermediate
+      NODE_EXTRA_CA_CERTS: /home/vcap/app/srv/certs/s4-ca-chain.pem
+      cds_pr_publicUrl: https://~{app-api/app-uri}
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: app-api
+      - name: pr-compliance-auth
+      - name: pr-compliance-db
+      - name: pr-compliance-destination
+      - name: pr-secrets
+      - name: pr-mail
+
+  # ---------------------------------------------------------------------------
+  # HDI deployer - runs once, then stops (0 MB at runtime)
+  # ---------------------------------------------------------------------------
+  - name: pr-compliance-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+      no-route: true
+    requires:
+      - name: pr-compliance-db
+
+  # ---------------------------------------------------------------------------
+  # Standalone approuter - 128 MB (serves UIs from the HTML5 Application Repository)
+  # ---------------------------------------------------------------------------
+  - name: pr-compliance
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      memory: 128M
+      disk-quota: 256M
+      keep-existing-routes: true
+    properties:
+      # V8 heap below the 128M container limit -> GC kicks in before the cgroup OOM killer
+      NODE_OPTIONS: "--max-old-space-size=80 --max-semi-space-size=4"
+      MALLOC_ARENA_MAX: "2"
+      SESSION_TIMEOUT: 30
+      httpHeaders: >-
+        [{"X-Content-Type-Options":"nosniff"},{"X-Frame-Options":"SAMEORIGIN"},
+        {"Referrer-Policy":"strict-origin-when-cross-origin"},
+        {"Strict-Transport-Security":"max-age=31536000; includeSubDomains"}]
+    requires:
+      - name: pr-compliance-auth
+      - name: pr-compliance-destination
+      - name: pr-compliance-html5-runtime
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must match xs-app.json
+          url: ~{srv-url}
+          forwardAuthToken: true
+          timeout: 60000
+    provides:
+      - name: app-api
+        properties:
+          app-protocol: ${protocol}
+          app-uri: ${default-uri}
+
+  # ---------------------------------------------------------------------------
+  # Fiori elements apps -> zipped into the HTML5 Application Repository (no runtime memory)
+  # ---------------------------------------------------------------------------
+  - name: prrequisitions
+    type: html5
+    path: app/requisitions
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: prapprovals
+    type: html5
+    path: app/approvals
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: prpurchaseorders
+    type: html5
+    path: app/purchaseorders
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: prmasterdata
+    type: html5
+    path: app/masterdata
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+  - name: pr-compliance-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: pr-compliance-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources/
+      requires:
+        - name: prrequisitions
+          artifacts: [prrequisitions.zip]
+          target-path: resources/
+        - name: prapprovals
+          artifacts: [prapprovals.zip]
+          target-path: resources/
+        - name: prpurchaseorders
+          artifacts: [prpurchaseorders.zip]
+          target-path: resources/
+        - name: prmasterdata
+          artifacts: [prmasterdata.zip]
+          target-path: resources/
+
+resources:
+  - name: pr-compliance-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: pr-compliance-${org}-${space}
+        tenant-mode: dedicated
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+          redirect-uris:
+            - https://*~{app-api/app-uri}/**
+    requires:
+      - name: app-api
+
+  - name: pr-compliance-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+
+  # Destination service: srv-api (created here) + S4HANA / GROQ_API (created by you in the BTP cockpit)
+  - name: pr-compliance-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Name: srv-api
+                Description: PR Compliance CAP service
+                URL: ~{srv-api/srv-url}
+                Type: HTTP
+                ProxyType: Internet
+                Authentication: NoAuthentication
+                HTML5.ForwardAuthToken: true
+                HTML5.Timeout: 60000
+    requires:
+      - name: srv-api
+
+  - name: pr-compliance-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: pr-compliance-html5-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+
+  # Secrets are supplied at deploy time: cf deploy <mtar> -e deploy/secrets.mtaext
+  - name: pr-secrets
+    type: org.cloudfoundry.user-provided-service
+    parameters:
+      service-name: pr-secrets
+
+  - name: pr-mail
+    type: org.cloudfoundry.user-provided-service
+    parameters:
+      service-name: pr-mail

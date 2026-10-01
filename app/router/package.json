@@ -1,0 +1,15 @@
+{
+  "name": "pr-compliance-approuter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone approuter: XSUAA login, routes to CAP (srv-api) and the HTML5 Application Repository",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@sap/approuter": "^23"
+  },
+  "scripts": {
+    "start": "node node_modules/@sap/approuter/approuter.js"
+  }
+}

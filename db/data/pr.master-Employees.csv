@@ -1,0 +1,9 @@
+userId;name;email;jobTitle;manager_userId;costCenter_code;active
+alice;Alice Requester;alice@example.com;IT Engineer;bob;CC-IT-100;true
+bob;Bob Manager;bob@example.com;IT Manager;erin;CC-IT-100;true
+carol;Carol Finance;carol@example.com;Finance Controller;frank;CC-IT-100;true
+dan;Dan Procurement;dan@example.com;Procurement Lead;frank;CC-OPS-300;true
+erin;Erin Director;erin@example.com;Director Operations;frank;CC-IT-100;true
+frank;Frank CFO;frank@example.com;Chief Financial Officer;;CC-IT-100;true
+grace;Grace Buyer;grace@example.com;Buyer;dan;CC-OPS-300;true
+admin;Admin User;admin@example.com;Application Admin;;CC-IT-100;true

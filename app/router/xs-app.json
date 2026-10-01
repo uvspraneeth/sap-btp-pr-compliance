@@ -1,0 +1,57 @@
+{
+  "welcomeFile": "/launchpad.html",
+  "authenticationMethod": "route",
+  "logout": {
+    "logoutEndpoint": "/do/logout",
+    "logoutPage": "/logout.html"
+  },
+  "responseHeaders": [
+    {
+      "name": "Content-Security-Policy",
+      "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ui5.sap.com; style-src 'self' 'unsafe-inline' https://ui5.sap.com; img-src 'self' data: blob: https://ui5.sap.com; font-src 'self' data: https://ui5.sap.com; connect-src 'self' https://ui5.sap.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'"
+    },
+    { "name": "X-Content-Type-Options", "value": "nosniff" },
+    { "name": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+    { "name": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+  ],
+  "routes": [
+    {
+      "source": "^/health$",
+      "target": "/health",
+      "destination": "srv-api",
+      "authenticationType": "none",
+      "csrfProtection": false
+    },
+    {
+      "source": "^/odata/(.*)$",
+      "target": "/odata/$1",
+      "destination": "srv-api",
+      "authenticationType": "xsuaa",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/email-action(.*)$",
+      "target": "/email-action$1",
+      "destination": "srv-api",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
+    {
+      "source": "^/launchpad.html$",
+      "localDir": "resources",
+      "authenticationType": "xsuaa",
+      "cacheControl": "no-cache, no-store, must-revalidate"
+    },
+    {
+      "source": "^/logout.html$",
+      "localDir": "resources",
+      "authenticationType": "none"
+    },
+    {
+      "source": "^(.*)$",
+      "target": "$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "name": "pr-compliance",
+  "version": "1.0.0",
+  "description": "PR Compliance + Purchase Order - CAP / Fiori elements on SAP BTP",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@cap-js/hana": "^3",
+    "@sap/cds": "^10",
+    "@sap/xssec": "^4",
+    "nodemailer": "^7"
+  },
+  "devDependencies": {
+    "@cap-js/cds-test": "^1",
+    "@cap-js/sqlite": "^3",
+    "@sap/cds-dk": "^10"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch",
+    "test": "node --test --test-concurrency=1 \"test/*.test.js\"",
+    "build": "mbt build -t mta_archives",
+    "deploy": "cf deploy mta_archives/pr-compliance_1.0.0.mtar",
+    "hybrid": "node scripts/hybrid.js"
+  },
+  "private": true,
+  "cds": {
+    "server": {
+      "body_parser": {
+        "limit": "1mb"
+      }
+    },
+    "query": {
+      "limit": {
+        "default": 50,
+        "max": 500
+      }
+    },
+    "requires": {
+      "db": {
+        "[development]": {
+          "kind": "sqlite",
+          "credentials": {
+            "url": ":memory:"
+          }
+        },
+        "[production]": {
+          "kind": "hana"
+        }
+      },
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "alice": {
+              "password": "alice",
+              "roles": [
+                "Requester"
+              ]
+            },
+            "bob": {
+              "password": "bob",
+              "roles": [
+                "Requester",
+                "Approver"
+              ]
+            },
+            "carol": {
+              "password": "carol",
+              "roles": [
+                "Approver"
+              ]
+            },
+            "dan": {
+              "password": "dan",
+              "roles": [
+                "Approver"
+              ]
+            },
+            "erin": {
+              "password": "erin",
+              "roles": [
+                "Approver"
+              ]
+            },
+            "frank": {
+              "password": "frank",
+              "roles": [
+                "Approver"
+              ]
+            },
+            "grace": {
+              "password": "grace",
+              "roles": [
+                "Requester",
+                "Buyer"
+              ]
+            },
+            "admin": {
+              "password": "admin",
+              "roles": [
+                "Admin",
+                "Requester",
+                "Approver",
+                "Buyer"
+              ]
+            }
+          }
+        },
+        "[production]": {
+          "kind": "xsuaa"
+        }
+      },
+      "queue": {
+        "maxAttempts": 8
+      },
+      "mail": {
+        "impl": "srv/lib/mail/MailService.js",
+        "outboxed": true,
+        "transport": "console",
+        "from": "PR Compliance <no-reply@example.com>",
+        "vcap": {
+          "name": "pr-mail"
+        },
+        "[production]": {
+          "transport": "smtp"
+        }
+      },
+      "s4sync": {
+        "impl": "srv/lib/s4/S4SyncService.js",
+        "outboxed": true
+      },
+      "groq": {
+        "kind": "rest",
+        "[production]": {
+          "credentials": {
+            "destination": "GROQ_API",
+            "requestTimeout": 15000
+          }
+        }
+      },
+      "API_PURCHASEORDER_PROCESS_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_PURCHASEORDER_PROCESS_SRV",
+        "csrf": true,
+        "csrfInBatch": true,
+        "[production]": {
+          "credentials": {
+            "destination": "S4HANA",
+            "path": "/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV"
+          },
+          "model": [
+            "srv/external/API_PURCHASEORDER_PROCESS_SRV",
+            "srv/external/API_PURCHASEORDER_PROCESS_SRV.no-db"
+          ]
+        }
+      },
+      "html5-repo": true
+    },
+    "pr": {
+      "publicUrl": "http://localhost:4004",
+      "tokenTtlHours": 72,
+      "secretsVcapName": "pr-secrets",
+      "s4": {
+        "mode": "mock",
+        "purchaseOrderType": "NB",
+        "[production]": {
+          "mode": "simulate"
+        }
+      },
+      "ai": {
+        "enabled": true,
+        "destination": "GROQ_API",
+        "model": "llama-3.3-70b-versatile",
+        "timeoutMs": 10000,
+        "maxPerMinute": 10
+      },
+      "reminders": {
+        "every": "1h"
+      }
+    }
+  }
+}

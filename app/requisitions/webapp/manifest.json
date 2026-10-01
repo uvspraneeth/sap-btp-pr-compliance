@@ -1,0 +1,276 @@
+{
+  "_version": "1.86.0",
+  "sap.app": {
+    "id": "pr.requisitions",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.33.0",
+      "toolsId": "31612beb-4643-4ee9-b331-0e836bdae7ee"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/requisition/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "PurchaseRequisition-manage": {
+          "semanticObject": "PurchaseRequisition",
+          "action": "manage",
+          "title": "{{appTitle}}",
+          "subTitle": "{{appSubTitle}}",
+          "icon": "sap-icon://request",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://request",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.148.11",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {},
+        "sap.suite.ui.commons": {
+          "lazy": true
+        }
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "pr.requisitions.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "PurchaseRequisitionsList",
+          "target": "PurchaseRequisitionsList"
+        },
+        {
+          "pattern": "PurchaseRequisitions({key}):?query:",
+          "name": "PurchaseRequisitionsObjectPage",
+          "target": "PurchaseRequisitionsObjectPage"
+        },
+        {
+          "pattern": "PurchaseRequisitions({key})/items({key2}):?query:",
+          "name": "PRItemsObjectPage",
+          "target": "PRItemsObjectPage"
+        }
+      ],
+      "targets": {
+        "PurchaseRequisitionsList": {
+          "type": "Component",
+          "id": "PurchaseRequisitionsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/PurchaseRequisitions",
+              "variantManagement": "Page",
+              "navigation": {
+                "PurchaseRequisitions": {
+                  "detail": {
+                    "route": "PurchaseRequisitionsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true,
+                      "sort": true,
+                      "filter": true
+                    }
+                  }
+                }
+              },
+              "initialLoad": "Enabled"
+            }
+          }
+        },
+        "PurchaseRequisitionsObjectPage": {
+          "type": "Component",
+          "id": "PurchaseRequisitionsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/PurchaseRequisitions",
+              "navigation": {
+                "items": {
+                  "detail": {
+                    "route": "PRItemsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "items/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true,
+                      "sort": true,
+                      "filter": true
+                    },
+                    "creationMode": {
+                      "name": "Inline",
+                      "createAtEnd": true
+                    }
+                  }
+                },
+                "checks/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true,
+                      "sort": true,
+                      "filter": true
+                    }
+                  }
+                },
+                "tasks/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true,
+                      "sort": true,
+                      "filter": true
+                    }
+                  }
+                },
+                "events/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true,
+                      "sort": true,
+                      "filter": true
+                    }
+                  }
+                }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "createPurchaseOrder": {
+                      "press": "pr.requisitions.ext.CustomActions.createPurchaseOrder",
+                      "text": "{i18n>createPO}",
+                      "enabled": "{= %{status} === 'Approved' }",
+                      "visible": "{= ${IsActiveEntity} === true }",
+                      "requiresSelection": false
+                    }
+                  }
+                },
+                "body": {
+                  "sections": {
+                    "processFlow": {
+                      "template": "pr.requisitions.ext.fragment.ProcessFlow",
+                      "title": "{i18n>sectionProcessFlow}",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "Items"
+                      }
+                    },
+                    "aiRecommendations": {
+                      "template": "pr.requisitions.ext.fragment.AIPanel",
+                      "title": "{i18n>sectionAI}",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "Approvals"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "PRItemsObjectPage": {
+          "type": "Component",
+          "id": "PRItemsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/PurchaseRequisitions/items"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "prcompliance"
+  }
+}

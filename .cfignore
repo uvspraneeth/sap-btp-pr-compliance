@@ -1,0 +1,8 @@
+trial.json
+.cdsrc-private.json
+.env
+node_modules/
+test/
+mta_archives/
+*.mtar
+.vscode/

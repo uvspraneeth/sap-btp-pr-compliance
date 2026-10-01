@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+# CF build: npm run build:cf -> dist/prapprovals.zip (consumed by the html5 app-content module in mta.yaml)
+specVersion: "4.0"
+metadata:
+  name: pr.approvals
+type: application
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: ui5-task-zipper
+      afterTask: generateCachebusterInfo
+      configuration:
+        archiveName: prapprovals
+        relativePaths: true

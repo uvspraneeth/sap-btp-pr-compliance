@@ -1,0 +1,22 @@
+{
+  "scopes": [
+    { "name": "$XSAPPNAME.Requester", "description": "Create and submit purchase requisitions, create purchase orders" },
+    { "name": "$XSAPPNAME.Approver", "description": "Approve or reject purchase requisitions and PO variances" },
+    { "name": "$XSAPPNAME.Buyer", "description": "Manage all purchase orders and post them to S/4HANA" },
+    { "name": "$XSAPPNAME.Admin", "description": "Maintain master data, approval rules and settings" }
+  ],
+  "attributes": [],
+  "role-templates": [
+    { "name": "Requester", "description": "PR requester", "scope-references": ["$XSAPPNAME.Requester"], "attribute-references": [] },
+    { "name": "Approver", "description": "PR / variance approver", "scope-references": ["$XSAPPNAME.Approver"], "attribute-references": [] },
+    { "name": "Buyer", "description": "Procurement buyer", "scope-references": ["$XSAPPNAME.Buyer"], "attribute-references": [] },
+    { "name": "Admin", "description": "Application administrator", "scope-references": ["$XSAPPNAME.Admin"], "attribute-references": [] }
+  ],
+  "role-collections": [
+    { "name": "PR_Requester", "description": "PR Compliance - Requester", "role-template-references": ["$XSAPPNAME.Requester"] },
+    { "name": "PR_Approver", "description": "PR Compliance - Approver", "role-template-references": ["$XSAPPNAME.Approver"] },
+    { "name": "PR_Buyer", "description": "PR Compliance - Buyer", "role-template-references": ["$XSAPPNAME.Buyer"] },
+    { "name": "PR_Admin", "description": "PR Compliance - Administrator", "role-template-references": ["$XSAPPNAME.Admin", "$XSAPPNAME.Requester", "$XSAPPNAME.Approver", "$XSAPPNAME.Buyer"] }
+  ],
+  "authorities-inheritance": false
+}

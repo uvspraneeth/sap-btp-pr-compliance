@@ -1,0 +1,8 @@
+ID;description;category_code;uom;standardPrice;currency_code;preferredVendor_ID;s4Material
+M-LAPTOP-14;Laptop 14 inch business;IT;EA;1200.00;USD;V1001;TG10
+M-MONITOR-27;Monitor 27 inch;IT;EA;320.00;USD;V1002;TG0001
+M-DOCK;USB-C docking station;IT;EA;180.00;USD;V1001;TG10
+M-LICENSE-SW;Software licence (annual);IT;EA;300.00;USD;V1001;TG0001
+M-PAPER-A4;Copy paper A4 (box);OFFICE;BOX;25.00;USD;V1003;TG10
+M-CHAIR;Ergonomic office chair;OFFICE;EA;450.00;USD;V1003;TG0001
+M-CONSULT-DAY;Consulting day rate;SERVICES;DAY;950.00;USD;V1006;TG0001

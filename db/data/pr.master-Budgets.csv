@@ -1,0 +1,4 @@
+ID;costCenter_code;fiscalYear;amount;committed;consumed;currency_code
+b0d9e1a0-0001-4d2b-8c3e-000000000001;CC-IT-100;2026;250000;0;0;USD
+b0d9e1a0-0001-4d2b-8c3e-000000000002;CC-MKT-200;2026;80000;0;0;USD
+b0d9e1a0-0001-4d2b-8c3e-000000000003;CC-OPS-300;2026;5000;0;0;USD

@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:commons="sap.suite.ui.commons">
+	<VBox id="pfBox" width="100%" core:require="{ PF: 'pr/requisitions/ext/fragment/ProcessFlow' }" modelContextChange="PF.onModelContextChange">
+		<!-- Re-loads the flow whenever the object page context or its status changes (after submit, withdraw, approvals...) -->
+		<core:InvisibleText id="pfTrigger"
+			text="{parts: [{path: 'ID'}, {path: 'IsActiveEntity'}, {path: 'status'}, {path: 'currentLevel'}, {path: 'modifiedAt'}], formatter: 'PF.trigger'}"/>
+		<OverflowToolbar id="pfToolbar" style="Clear">
+			<ObjectStatus id="pfLegendOk" text="{i18n>pfDone}" icon="sap-icon://sys-enter-2" state="Success"/>
+			<ObjectStatus id="pfLegendOpen" text="{i18n>pfInProgress}" icon="sap-icon://pending" state="Warning"/>
+			<ObjectStatus id="pfLegendKo" text="{i18n>pfRejected}" icon="sap-icon://error" state="Error"/>
+			<ToolbarSpacer id="pfSpacer"/>
+			<Button id="pfZoomIn" icon="sap-icon://zoom-in" type="Transparent" tooltip="{i18n>pfZoomIn}" press="PF.onZoomIn"/>
+			<Button id="pfZoomOut" icon="sap-icon://zoom-out" type="Transparent" tooltip="{i18n>pfZoomOut}" press="PF.onZoomOut"/>
+			<Button id="pfRefresh" icon="sap-icon://refresh" type="Transparent" tooltip="{i18n>pfRefresh}" press="PF.onRefresh"/>
+		</OverflowToolbar>
+		<MessageStrip id="pfDraftHint" text="{i18n>pfDraftHint}" type="Information" showIcon="true" visible="{= ${pf>/active} === false }"/>
+		<MessageStrip id="pfError" text="{pf>/error}" type="Warning" showIcon="true" visible="{= !!${pf>/error} }"/>
+		<commons:ProcessFlow id="processFlow" scrollable="true" foldedCorners="true" wheelZoomable="false" showLabels="true"
+			busy="{pf>/busy}" busyIndicatorDelay="200" visible="{= ${pf>/active} === true }"
+			lanes="{path: 'pf>/lanes', templateShareable: false}"
+			nodes="{path: 'pf>/nodes', templateShareable: false}">
+			<commons:lanes>
+				<commons:ProcessFlowLaneHeader laneId="{pf>id}" iconSrc="{pf>icon}" text="{pf>label}" position="{pf>position}"/>
+			</commons:lanes>
+			<commons:nodes>
+				<commons:ProcessFlowNode nodeId="{pf>id}" laneId="{pf>lane}" title="{pf>title}" titleAbbreviation="{pf>titleAbbreviation}"
+					children="{pf>children}" state="{pf>state}" stateText="{pf>stateText}" texts="{pf>texts}"/>
+			</commons:nodes>
+		</commons:ProcessFlow>
+	</VBox>
+</core:FragmentDefinition>

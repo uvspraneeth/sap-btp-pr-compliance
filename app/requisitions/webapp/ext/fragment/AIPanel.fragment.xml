@@ -1,0 +1,60 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<VBox id="aiBox" width="100%" core:require="{ AI: 'pr/requisitions/ext/fragment/AIPanel' }" modelContextChange="AI.onModelContextChange">
+		<!-- Loads the latest stored advice whenever the object page context changes -->
+		<core:InvisibleText id="aiTrigger" text="{parts: [{path: 'ID'}, {path: 'IsActiveEntity'}], formatter: 'AI.trigger'}"/>
+		<MessageStrip id="aiDisclaimer" text="{i18n>aiDisclaimer}" type="Information" showIcon="true" class="sapUiTinyMarginBottom"/>
+		<OverflowToolbar id="aiToolbar" style="Clear">
+			<Title id="aiTitle" text="{= ${ai>/rec} ? ${i18n>aiLatest} : ${i18n>aiNone} }" level="H4"/>
+			<ObjectStatus id="aiConfidence" visible="{= !!${ai>/rec/confidence} }" text="{ai>/rec/confidence}" icon="sap-icon://target-group"
+				state="{= ${ai>/rec/confidence} === 'high' ? 'Success' : ${ai>/rec/confidence} === 'medium' ? 'Warning' : 'None' }"/>
+			<ToolbarSpacer id="aiSpacer"/>
+			<Button id="aiGet" text="{i18n>aiGet}" icon="sap-icon://lightbulb" type="Emphasized" press="AI.onGetRecommendations"
+				enabled="{= ${ai>/active} === true &amp;&amp; !${ai>/busy} }"/>
+		</OverflowToolbar>
+		<MessageStrip id="aiError" text="{ai>/error}" type="Warning" showIcon="true" visible="{= !!${ai>/error} }" class="sapUiTinyMarginBottom"/>
+		<VBox id="aiContent" busy="{ai>/busy}" busyIndicatorDelay="100" visible="{= !!${ai>/rec} || ${ai>/busy} === true }">
+			<Text id="aiSummary" text="{ai>/rec/summary}" class="sapUiSmallMarginBottom"/>
+			<HBox id="aiVendorRow" alignItems="Center" visible="{= !!${ai>/rec/vendorRecommendation/vendorID} }" class="sapUiSmallMarginBottom">
+				<ObjectStatus id="aiVendor" title="{i18n>aiVendor}" icon="sap-icon://supplier" state="Information"
+					text="{ai>/rec/vendorRecommendation/vendorName} ({ai>/rec/vendorRecommendation/vendorID})"/>
+				<Button id="aiApplyVendor" text="{i18n>aiApplyVendor}" icon="sap-icon://accept" type="Transparent" class="sapUiSmallMarginBegin"
+					visible="{= ${ai>/active} === false }" press="AI.onApplyVendor"/>
+			</HBox>
+			<Text id="aiVendorReason" text="{ai>/rec/vendorRecommendation/reason}" visible="{= !!${ai>/rec/vendorRecommendation/reason} }" class="sapUiSmallMarginBottom"/>
+			<Table id="aiPrices" items="{path: 'ai>/rec/priceInsights', templateShareable: false}" growing="true" growingThreshold="10"
+				visible="{= !!${ai>/rec/priceInsights} &amp;&amp; ${ai>/rec/priceInsights}.length > 0 }" headerText="{i18n>aiPriceInsights}">
+				<columns>
+					<Column id="aiColItem" width="4rem"><Text id="aiColItemTxt" text="{i18n>aiItem}"/></Column>
+					<Column id="aiColMat"><Text id="aiColMatTxt" text="{i18n>aiMaterial}"/></Column>
+					<Column id="aiColReq" hAlign="End"><Text id="aiColReqTxt" text="{i18n>aiRequested}"/></Column>
+					<Column id="aiColHist" hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text id="aiColHistTxt" text="{i18n>aiHistorical}"/></Column>
+					<Column id="aiColCat" hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text id="aiColCatTxt" text="{i18n>aiCatalog}"/></Column>
+					<Column id="aiColCmt" minScreenWidth="Desktop" demandPopin="true"><Text id="aiColCmtTxt" text="{i18n>aiComment}"/></Column>
+				</columns>
+				<items>
+					<ColumnListItem id="aiPriceRow">
+						<Text id="aiPItem" text="{ai>itemNo}"/>
+						<Text id="aiPMat" text="{ai>materialID}"/>
+						<ObjectNumber id="aiPReq" number="{ai>requestedPrice}"/>
+						<ObjectNumber id="aiPHist" number="{ai>historicalAvg}"/>
+						<ObjectNumber id="aiPCat" number="{ai>catalogPrice}"/>
+						<Text id="aiPCmt" text="{ai>comment}"/>
+					</ColumnListItem>
+				</items>
+			</Table>
+			<List id="aiHints" headerText="{i18n>aiHints}" items="{path: 'ai>/rec/complianceHints', templateShareable: false}"
+				visible="{= !!${ai>/rec/complianceHints} &amp;&amp; ${ai>/rec/complianceHints}.length > 0 }" showSeparators="Inner">
+				<StandardListItem id="aiHint" title="{ai>}" icon="sap-icon://message-information" wrapping="true"/>
+			</List>
+			<List id="aiRisks" headerText="{i18n>aiRisks}" items="{path: 'ai>/rec/risks', templateShareable: false}"
+				visible="{= !!${ai>/rec/risks} &amp;&amp; ${ai>/rec/risks}.length > 0 }" showSeparators="Inner">
+				<StandardListItem id="aiRisk" title="{ai>}" icon="sap-icon://message-warning" wrapping="true"/>
+			</List>
+			<Panel id="aiJustification" headerText="{i18n>aiJustification}" expandable="true" expanded="false"
+				visible="{= !!${ai>/rec/justificationSuggestion} }">
+				<Text id="aiJustificationText" text="{ai>/rec/justificationSuggestion}"/>
+			</Panel>
+			<Text id="aiMeta" text="{ai>/meta}" class="sapUiTinyMarginTop"/>
+		</VBox>
+	</VBox>
+</core:FragmentDefinition>
